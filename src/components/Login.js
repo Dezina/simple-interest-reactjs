@@ -28,17 +28,6 @@ const Login = () => {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [show, setShow] = useState(false);
-  const [onecolor, setOnecolor] = useState("yellow")
-  const [twocolor, setTwocolor] = useState("yellow")
-
-  useEffect(() => {
-    // test case 1
-    if (localStorage.getItem("token")) {
-      history.push("/Page2");
-      window.location.reload();
-    }
-  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -54,19 +43,23 @@ else {
     password: password,
   };
 
-  axios
-    .post("https://goasocialmediamarketing.com/betterlifeapi/api/login", body)
-    .then((res) => {
-console.log("res", res.data.data.UserToken)
+    axios({
+        method: "POST",
+        url: `https://goasocialmediamarketing.com/betterlifeapi/api/login`,
+        data: body,
+        headers: {
+            Authorization: `Bearer Token`,
+        },
+      })
+        .then((res) => {
+        localStorage.setItem("token", res.data.data.UserToken);
+        localStorage.setItem("username", res.data.data.fullName);
+        history.push("/SimpleInterest");
+        window.location.reload();
+        })
+        .catch((err) => {
 
-      localStorage.setItem("token", res.data.data.UserToken);
-      localStorage.setItem("username", res.data.data.fullName);
-      history.push("/SimpleInterest");
-      window.location.reload();
-    })
-    .catch((err) => {
-
-      toast.error(err.response.data.message, { position: "top-right" });
+        toast.error(err.response.data.message, { position: "top-right" });
     });
 }
    
